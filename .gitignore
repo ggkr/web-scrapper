@@ -1,0 +1,157 @@
+# Project-specific paths
+logs/
+cache/
+config/*
+!config/example.yaml
+subscribers/*.conf
+*.session
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+#  Usually these files are written by a python script run from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+/*.manifest
+/*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nosenv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+vulture_html/
+.hypothesis/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+#   For a library or package, you might want to share your .python-version.
+#   For an app, this can be useful so that other developers know which version to use:
+#.python-version
+
+# pipenv
+#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+#   However, in case of collaboration, if used with a windows system or standard linux system,
+#   it can cause issues.
+#Pipfile.lock
+
+# poetry
+#   Similar to Pipfile.lock, poetry.lock can be include in version control or not.
+#poetry.lock
+
+# pdm
+#   Similar to Pipfile.lock, pdm.lock can be include in version control or not.
+#.pdm-plugins.toml
+#.pdm-python
+
+# PEP 582; used by e.g. github.com/pypa/pipflow
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyder-py3
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# PyCharm
+#  JetBrains templates clean up after themselves.
+#  Ref: https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
+.idea/
+
+# Visual Studio
+.vs/
+*.user
+*.userossc
+*.sln.docstates
+
+# OS metadata
+.DS_Store
+Thumbs.db

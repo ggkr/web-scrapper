@@ -1,0 +1,81 @@
+# Example Configuration File for Bulletin Web Scrapper
+# Save this file as `config/your_source_name.yaml` and modify it.
+
+# The identifier of the scraper plugin to use. Must match a registered scraper plugin
+# name (defined via @register("source_name") in plugins/).
+source: example_source
+
+# A friendly name for this scraper configuration run.
+name: Example Scraper Configuration
+
+# Logging configuration
+logging:
+  # Path to the log file (the directory will be created automatically if it doesn't exist)
+  file: logs/example.log
+  
+  # Log verbosity level. Supported values: DEBUG | INFO | WARNING | ERROR | CRITICAL
+  level: INFO
+  
+  # When set to true, appends the current date to the log file name (e.g. logs/example-2026-06-30.log)
+  timestamp: false
+  
+  # If true, log messages will be printed to stdout (console) in addition to any log file
+  console: true
+
+# Cache settings (used to detect new listings and avoid sending duplicate notifications)
+cache:
+  # Path to the JSON cache file
+  file: cache/example_cache.json
+  
+  # Expiration duration for cached listings
+  expiration:
+    value: 90
+    unit: days  # Supported units: days | hours | weeks
+    
+  # Cache cleanup strategies
+  cleanup:
+    # If true, items that are no longer found in the scan will be removed from the cache
+    on_removed: true
+    
+    # If true, items older than the expiration duration will be removed from the cache
+    on_expiration: true
+
+# Notifications configuration
+notifications:
+  # List of Telegram subscriber names. Each name must have a corresponding
+  # subscriber file at "./subscribers/<name>.conf" containing the bot token and chat ID.
+  telegram_subscriptions:
+    - example_subscriber
+    
+  # Message template formatted with listing fields using standard Python string format syntax.
+  # Available fields are determined by the scraper plugin's output (e.g., {title}, {price}, {link}).
+  message_template: |
+    <b>New Listing Found:</b>
+    <u>Title:</u> {title}
+    <u>Price:</u> {price}
+    <u>Link:</u> {link}
+    
+  # Email alerts sent in case of unhandled scraper errors
+  email:
+    # If true, runs a script callback to send an email notification when a run fails or encounters errors
+    enabled_on_error: true
+    
+    # Subject line for the error notification email
+    subject: ExampleScrapper - Encountered Errors
+    
+    # SMTP server host and port to use for sending emails
+    smtp_server: 10.100.102.250
+    smtp_port: 25
+    
+    # Email addresses of the sender and recipient
+    sender: error-alerts@example.com
+    recipient: admin@example.com
+
+# Scraper-specific configuration settings.
+# The key for this section must match the value of the 'source' field above.
+example_source:
+  # Custom variables needed by your custom scraper plugin. E.g.:
+  search_urls:
+    - "https://www.example.com/listings?category=electronics"
+  delay: 2.0
+  fetch_details: false
