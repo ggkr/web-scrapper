@@ -3,6 +3,8 @@ import logging
 from datetime import datetime
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
+from bs4 import BeautifulSoup
+
 from core.base_scraper import BaseScraper
 from core.listing import Listing
 from core.registry import register
@@ -24,6 +26,18 @@ FEED_SECTIONS = (
 
 @register("yad2")
 class Yad2Scraper(BaseScraper):
+    """Parses Yad2 real-estate search results embedded in each page's
+    server-rendered __NEXT_DATA__ blob. Fetching (loading each search/item
+    page in a real browser, since Yad2 has bot protection that blocks plain
+    HTTP requests) is handled by BaseScraper.fetch_rendered_page(); this
+    class only parses the fetched HTML into Listings.
+
+    Pagination here can't use BaseScraper.fetch_paginated() directly, since
+    the total page count is only known after parsing the first page's
+    __NEXT_DATA__ - so this plugin drives its own pagination loop, using
+    fetch_rendered_page() for each individual fetch.
+    """
+
     def scan(self) -> list[Listing]:
         yad2 = self.config["yad2"]
         listings_by_id: dict[str, Listing] = {}
@@ -89,21 +103,18 @@ class Yad2Scraper(BaseScraper):
 
     def _load_feed_data(self, page, url: str, query_key: str) -> dict:
         logging.info("Fetching Yad2 feed: %s", url)
-        page.goto(url, wait_until="load", timeout=60000)
+        content = self.fetch_rendered_page(url, page=page, wait_for_selector="#__NEXT_DATA__")
         logger.debug("Page loaded, extracting __NEXT_DATA__ query_key=%s", query_key)
-        return self._extract_next_data(page, query_key)
+        return self._extract_next_data(content, query_key)
 
-    def _extract_next_data(self, page, query_key: str) -> dict:
-        html = page.evaluate(
-            """() => {
-                const el = document.getElementById('__NEXT_DATA__');
-                return el ? el.textContent : null;
-            }"""
-        )
-        if not html:
+    @staticmethod
+    def _extract_next_data(content: str, query_key: str) -> dict:
+        soup = BeautifulSoup(content, "html.parser")
+        script_tag = soup.select_one("#__NEXT_DATA__")
+        if script_tag is None or not script_tag.string:
             raise RuntimeError("__NEXT_DATA__ not found on Yad2 page (bot protection?)")
 
-        parsed = json.loads(html)
+        parsed = json.loads(script_tag.string)
         queries = (
             parsed.get("props", {})
             .get("pageProps", {})
@@ -196,8 +207,10 @@ class Yad2Scraper(BaseScraper):
             try:
                 item_url = item_template.format(token=listing.id)
                 logger.debug("Yad2 fetching item details: %s", item_url)
-                page.goto(item_url, wait_until="load", timeout=60000)
-                item_data = self._extract_next_data(page, item_query_key)
+                content = self.fetch_rendered_page(
+                    item_url, page=page, wait_for_selector="#__NEXT_DATA__"
+                )
+                item_data = self._extract_next_data(content, item_query_key)
                 description = (item_data.get("searchText") or "").strip()
                 if description:
                     listing.fields["desc"] = description.split("\n", 1)[0].strip() or description
