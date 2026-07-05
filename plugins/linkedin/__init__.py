@@ -1,3 +1,3 @@
-from plugins.linkedin.scraper import LinkedIn
+from plugins.linkedin.scraper import LinkedInScraper
 
-__all__ = ["LinkedIn"]
+__all__ = ["LinkedInScraper"]

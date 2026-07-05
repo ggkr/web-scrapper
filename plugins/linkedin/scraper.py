@@ -18,7 +18,7 @@ JOB_ID_RE = re.compile(r"jobPosting:(\d+)")
 
 
 @register("linkedin")
-class LinkedIn(BaseScraper):
+class LinkedInScraper(BaseScraper):
     """Parses LinkedIn's public "guest" job search endpoint
     (jobs-guest/jobs/api/seeMoreJobPostings/search). Fetching each page is
     delegated to BaseScraper.fetch_static_page(); this class owns its own
