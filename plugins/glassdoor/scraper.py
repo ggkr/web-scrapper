@@ -73,7 +73,9 @@ class GlassdoorScraper(BaseScraper):
         with self.playwright_page(locale="en-US") as page:
             logger.debug("Playwright browser launched for Glassdoor")
             for search_url in search_urls:
-                self._scan_search_url(page, search_url, max_pages, delay, listings_by_id)
+                self._scan_search_url(
+                    page, search_url, max_pages, delay, listings_by_id
+                )
 
         logger.debug("Glassdoor scan complete: %s unique listings", len(listings_by_id))
         return list(listings_by_id.values())
@@ -110,7 +112,9 @@ class GlassdoorScraper(BaseScraper):
             logger.debug("Page %s returned %s listings", page_num, len(listings))
 
             if not listings:
-                logger.debug("No job cards found — stopping pagination for %s", search_url)
+                logger.debug(
+                    "No job cards found — stopping pagination for %s", search_url
+                )
                 break
 
             before = len(listings_by_id)
@@ -179,7 +183,9 @@ class GlassdoorScraper(BaseScraper):
                 return None
 
             # --- link -----------------------------------------------------
-            link_el = card.select_one("a[href*='glassdoor.com/job']") or card.select_one("a")
+            link_el = card.select_one(
+                "a[href*='glassdoor.com/job']"
+            ) or card.select_one("a")
             href = link_el["href"] if link_el and link_el.get("href") else ""
             # Normalise relative URLs
             if href.startswith("/"):
@@ -188,7 +194,9 @@ class GlassdoorScraper(BaseScraper):
             link = href.split("?")[0] if href else ""
 
             # --- title ----------------------------------------------------
-            title_el = card.select_one(_SEL_TITLE) or card.select_one(_SEL_TITLE_FALLBACK)
+            title_el = card.select_one(_SEL_TITLE) or card.select_one(
+                _SEL_TITLE_FALLBACK
+            )
             title = title_el.get_text(strip=True) if title_el else ""
 
             # --- company --------------------------------------------------

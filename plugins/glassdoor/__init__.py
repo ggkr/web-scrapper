@@ -1,3 +1,3 @@
-from plugins.glassdoor.scraper import GlassdoorScraper  # noqa: F401
+from plugins.glassdoor.scraper import GlassdoorScraper
 
 __all__ = ["GlassdoorScraper"]
