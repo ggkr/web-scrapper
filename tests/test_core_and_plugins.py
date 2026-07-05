@@ -11,6 +11,7 @@ from plugins.agora.scraper import AgoraScraper
 # Listing
 # ---------------------------------------------------------------------------
 
+
 def test_listing_url_from_fields_link():
     lst = Listing(
         id="1",
@@ -38,6 +39,7 @@ def test_listing_url_empty_when_no_url_field():
 # parse_duration
 # ---------------------------------------------------------------------------
 
+
 def test_parse_duration_days():
     cfg = {"value": 2, "unit": "days"}
     delta = parse_duration(cfg)
@@ -58,6 +60,7 @@ def test_parse_duration_weeks():
 # ---------------------------------------------------------------------------
 # CacheManager
 # ---------------------------------------------------------------------------
+
 
 def _make_config(tmp_path, expiration_days=1):
     return {
@@ -111,6 +114,7 @@ def test_cache_manager_cleanup_on_expiration(tmp_path):
 # ---------------------------------------------------------------------------
 # AgoraScraper
 # ---------------------------------------------------------------------------
+
 
 def _agora_config(tmp_path):
     return {
