@@ -80,9 +80,7 @@ def setup_logging(
     log_cfg = config.get("logging", {})
     _log_file = log_file if log_file is not None else log_cfg.get("file")
     timestamp = (
-        log_timestamp
-        if log_timestamp is not None
-        else log_cfg.get("timestamp", False)
+        log_timestamp if log_timestamp is not None else log_cfg.get("timestamp", False)
     )
     if _log_file and timestamp:
         _log_file = apply_log_timestamp(_log_file)

@@ -27,7 +27,9 @@ def parse_duration(expiration_cfg: dict) -> timedelta:
     unit = expiration_cfg.get("unit", DEFAULT_EXPIRATION["unit"])
     if unit not in _DURATION_UNITS:
         supported = ", ".join(sorted(_DURATION_UNITS))
-        raise ValueError(f"Invalid cache expiration unit: {unit!r}. Use one of: {supported}")
+        raise ValueError(
+            f"Invalid cache expiration unit: {unit!r}. Use one of: {supported}"
+        )
     return _DURATION_UNITS[unit](value)
 
 
@@ -63,9 +65,13 @@ class CacheManager:
             with open(self.cache_file, encoding="utf-8") as mem:
                 read = json.loads(mem.read())
                 cache = {str(k): datetime.fromisoformat(v) for k, v in read.items()}
-            logger.debug("Read %s entries from cache file %s", len(cache), self.cache_file)
+            logger.debug(
+                "Read %s entries from cache file %s", len(cache), self.cache_file
+            )
         except FileNotFoundError:
-            logger.debug("Cache file not found, starting with empty cache: %s", self.cache_file)
+            logger.debug(
+                "Cache file not found, starting with empty cache: %s", self.cache_file
+            )
         except Exception:
             logger.exception("failed to read cache")
             self.has_err = True
@@ -127,9 +133,7 @@ class CacheManager:
 
         if self.cleanup_on_expiration:
             expired = {
-                key
-                for key, value in cache.items()
-                if self.is_past_expiration(value)
+                key for key, value in cache.items() if self.is_past_expiration(value)
             }
             to_drop |= expired
             if expired:
@@ -152,9 +156,7 @@ class CacheManager:
             )
 
         before_count = len(cache) - len(to_drop)
-        clean_cache = {
-            key: value for key, value in cache.items() if key not in to_drop
-        }
+        clean_cache = {key: value for key, value in cache.items() if key not in to_drop}
         clean_cache.update(new_records)
         logger.debug(
             "Cache [%s]: writing %s entries (%s retained, %s added), saved to %s",

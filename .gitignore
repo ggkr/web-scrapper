@@ -53,6 +53,9 @@ htmlcov/
 .ruff_cache/
 vulture_html/
 .hypothesis/
+.coverage
+.coverage.*
+coverage.xml
 
 # Translations
 *.mo

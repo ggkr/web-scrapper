@@ -17,7 +17,9 @@ def load_config(path: str) -> dict:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Scan bulletin boards for new listings.")
+    parser = argparse.ArgumentParser(
+        description="Scan bulletin boards for new listings."
+    )
     parser.add_argument(
         "--config",
         required=True,
