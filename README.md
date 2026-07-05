@@ -43,6 +43,16 @@ cache/          Listing caches (paths configured in YAML)
 scanner.py      Entry point
 ```
 
+### Built-in plugins
+
+| Plugin | Source | Fetch method | What it scrapes |
+|--------|--------|--------------|-----------------|
+| `linkedin` | LinkedIn | Static HTTP | Public "guest" job search endpoint (`/jobs-guest/…`) |
+| `glassdoor` | Glassdoor | Playwright | Public job search pages (`/Job/…SRCH….htm`) |
+| `yad2` | Yad2 | Playwright | Real-estate listings via embedded `__NEXT_DATA__` |
+| `agora` | Agora | Playwright | Bulletin-board / auction listings |
+| `dell_store` | Dell IL store | Playwright | Product price checks |
+
 ### Adding a new scraper
 
 See `plugins/README.md`. In short: create `plugins/<name>/scraper.py`, subclass `BaseScraper`, decorate with `@register("<name>")`, and add a matching `config/<name>.yaml`. No core code changes are needed.
