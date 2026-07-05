@@ -44,9 +44,13 @@ class LinkedIn(BaseScraper):
         )
 
         for search_url in search_urls:
-            self._scan_search_url(search_url, page_size, max_pages, delay, listings_by_id)
+            self._scan_search_url(
+                search_url, page_size, max_pages, delay, listings_by_id
+            )
 
-        logger.debug("LinkedIn guest scan complete: %s unique listings", len(listings_by_id))
+        logger.debug(
+            "LinkedIn guest scan complete: %s unique listings", len(listings_by_id)
+        )
         return list(listings_by_id.values())
 
     def _scan_search_url(
@@ -72,7 +76,9 @@ class LinkedIn(BaseScraper):
             listings = self._parse_page(content)
             logger.debug("Page start=%s returned %s listings", start, len(listings))
             if not listings:
-                logger.debug("No more job cards, stopping pagination for %s", search_url)
+                logger.debug(
+                    "No more job cards, stopping pagination for %s", search_url
+                )
                 break
 
             for listing in listings:
@@ -116,7 +122,9 @@ class LinkedIn(BaseScraper):
 
     def _parse_card(self, card) -> Listing | None:
         try:
-            link_el = card.select_one("a.base-card__full-link, a.base-search-card__full-link")
+            link_el = card.select_one(
+                "a.base-card__full-link, a.base-search-card__full-link"
+            )
             link = link_el["href"].split("?")[0] if link_el else ""
 
             entity_urn = card.get("data-entity-urn", "")
@@ -129,7 +137,9 @@ class LinkedIn(BaseScraper):
                 logger.debug("Skipping job card without an id or link")
                 return None
 
-            title_el = card.select_one("h3.base-search-card__title, h3.base-card__title")
+            title_el = card.select_one(
+                "h3.base-search-card__title, h3.base-card__title"
+            )
             title = title_el.get_text(strip=True) if title_el else ""
 
             company_el = card.select_one(
@@ -141,7 +151,9 @@ class LinkedIn(BaseScraper):
             location = location_el.get_text(strip=True) if location_el else ""
 
             time_el = card.select_one("time")
-            upload_date = self._parse_upload_date(time_el.get("datetime") if time_el else None)
+            upload_date = self._parse_upload_date(
+                time_el.get("datetime") if time_el else None
+            )
 
             listing = Listing(
                 id=job_id,
@@ -153,7 +165,9 @@ class LinkedIn(BaseScraper):
                     "link": link,
                 },
             )
-            logger.debug("LinkedIn guest parsed listing: id=%s url=%s", listing.id, listing.url)
+            logger.debug(
+                "LinkedIn guest parsed listing: id=%s url=%s", listing.id, listing.url
+            )
             return listing
         except Exception:
             logging.exception("Failed to parse LinkedIn guest job card")
@@ -164,7 +178,9 @@ class LinkedIn(BaseScraper):
     def _parse_upload_date(value: str | None) -> datetime:
         if value:
             try:
-                return datetime.fromisoformat(value.replace("Z", "+00:00")).replace(tzinfo=None)
+                return datetime.fromisoformat(value.replace("Z", "+00:00")).replace(
+                    tzinfo=None
+                )
             except ValueError:
                 pass
         return datetime.now()

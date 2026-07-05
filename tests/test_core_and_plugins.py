@@ -7,7 +7,14 @@ from plugins.agora.scraper import AgoraScraper
 
 
 def test_listing_serialization():
-    lst = Listing(id="1", url="https://example.com", title="Test", description="Desc", fields={"extra": 42}, upload_date=datetime(2023, 1, 1, 12, 0, 0))
+    lst = Listing(
+        id="1",
+        url="https://example.com",
+        title="Test",
+        description="Desc",
+        fields={"extra": 42},
+        upload_date=datetime(2023, 1, 1, 12, 0, 0),
+    )
     d = lst.to_dict()
     assert d["id"] == "1"
     assert d["url"] == "https://example.com"

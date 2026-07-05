@@ -59,7 +59,9 @@ class Yad2Scraper(BaseScraper):
         logger.debug("Yad2 scan complete: %s unique listings", len(listings_by_id))
         return list(listings_by_id.values())
 
-    def _scan_search_url(self, page, search_url: str, yad2: dict, listings_by_id: dict[str, Listing]):
+    def _scan_search_url(
+        self, page, search_url: str, yad2: dict, listings_by_id: dict[str, Listing]
+    ):
         query_key = yad2["query_key"]
         before_count = len(listings_by_id)
         feed = self._load_feed_data(page, search_url, query_key)
@@ -88,7 +90,9 @@ class Yad2Scraper(BaseScraper):
             page_query = {key: values[0] for key, values in query.items()}
             page_query["page"] = str(page_num)
             page_url = urlunparse(parsed._replace(query=urlencode(page_query)))
-            logger.debug("Yad2 fetching page %s/%s: %s", page_num, total_pages, page_url)
+            logger.debug(
+                "Yad2 fetching page %s/%s: %s", page_num, total_pages, page_url
+            )
             next_feed = self._load_feed_data(page, page_url, query_key)
             self._add_feed_items(next_feed, listings_by_id)
 
@@ -99,11 +103,15 @@ class Yad2Scraper(BaseScraper):
             listing = self._parse_feed_item(item)
             if listing is not None:
                 listings_by_id[listing.id] = listing
-                logger.debug("Yad2 parsed listing: id=%s url=%s", listing.id, listing.url)
+                logger.debug(
+                    "Yad2 parsed listing: id=%s url=%s", listing.id, listing.url
+                )
 
     def _load_feed_data(self, page, url: str, query_key: str) -> dict:
         logging.info("Fetching Yad2 feed: %s", url)
-        content = self.fetch_rendered_page(url, page=page, wait_for_selector="#__NEXT_DATA__")
+        content = self.fetch_rendered_page(
+            url, page=page, wait_for_selector="#__NEXT_DATA__"
+        )
         logger.debug("Page loaded, extracting __NEXT_DATA__ query_key=%s", query_key)
         return self._extract_next_data(content, query_key)
 
@@ -142,7 +150,9 @@ class Yad2Scraper(BaseScraper):
         for section in FEED_SECTIONS:
             section_items = feed.get(section)
             if isinstance(section_items, list):
-                logger.debug("Yad2 feed section %s: %s items", section, len(section_items))
+                logger.debug(
+                    "Yad2 feed section %s: %s items", section, len(section_items)
+                )
                 items.extend(section_items)
         return items
 
@@ -165,7 +175,12 @@ class Yad2Scraper(BaseScraper):
             title = description.split("\n", 1)[0].strip() if description else ""
             upload_date = self._parse_upload_date(item.get("dateAdded"))
 
-            location_parts = [str(house) if house is not None else None, street, neighborhood, city]
+            location_parts = [
+                str(house) if house is not None else None,
+                street,
+                neighborhood,
+                city,
+            ]
             location = ", ".join(part for part in location_parts if part)
 
             return Listing(
@@ -174,7 +189,9 @@ class Yad2Scraper(BaseScraper):
                 fields={
                     "city": city,
                     "neighborhood": neighborhood,
-                    "price": f"{price:,}" if isinstance(price, (int, float)) else str(price or ""),
+                    "price": f"{price:,}"
+                    if isinstance(price, (int, float))
+                    else str(price or ""),
                     "rooms": str(rooms) if rooms is not None else "",
                     "desc": title or description,
                     "link": f"{ITEM_BASE}/{token}",
@@ -190,18 +207,26 @@ class Yad2Scraper(BaseScraper):
         if not value:
             return datetime.now()
         if isinstance(value, (int, float)):
-            return datetime.fromtimestamp(value / 1000 if value > 1_000_000_000_000 else value)
+            return datetime.fromtimestamp(
+                value / 1000 if value > 1_000_000_000_000 else value
+            )
         if isinstance(value, str):
             try:
-                return datetime.fromisoformat(value.replace("Z", "+00:00")).replace(tzinfo=None)
+                return datetime.fromisoformat(value.replace("Z", "+00:00")).replace(
+                    tzinfo=None
+                )
             except ValueError:
                 pass
         return datetime.now()
 
-    def _enrich_with_item_details(self, page, listings_by_id: dict[str, Listing], yad2: dict):
+    def _enrich_with_item_details(
+        self, page, listings_by_id: dict[str, Listing], yad2: dict
+    ):
         item_template = yad2.get("item_url_template", f"{ITEM_BASE}/{{token}}")
         item_query_key = yad2.get("item_query_key", "item")
-        logger.debug("Yad2 enriching %s listings with item details", len(listings_by_id))
+        logger.debug(
+            "Yad2 enriching %s listings with item details", len(listings_by_id)
+        )
 
         for listing in listings_by_id.values():
             try:
@@ -213,7 +238,11 @@ class Yad2Scraper(BaseScraper):
                 item_data = self._extract_next_data(content, item_query_key)
                 description = (item_data.get("searchText") or "").strip()
                 if description:
-                    listing.fields["desc"] = description.split("\n", 1)[0].strip() or description
+                    listing.fields["desc"] = (
+                        description.split("\n", 1)[0].strip() or description
+                    )
             except Exception:
-                logging.exception("failed to fetch Yad2 item details for %s", listing.id)
+                logging.exception(
+                    "failed to fetch Yad2 item details for %s", listing.id
+                )
                 self.has_err = True

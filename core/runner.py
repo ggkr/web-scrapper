@@ -10,7 +10,11 @@ from email.mime.text import MIMEText
 
 import requests
 
-from core.logging_config import clear_exception_traces, get_exception_traces, get_log_file
+from core.logging_config import (
+    clear_exception_traces,
+    get_exception_traces,
+    get_log_file,
+)
 from core.registry import get_scraper
 
 logger = logging.getLogger(__name__)
@@ -29,7 +33,8 @@ class ScannerRunner:
         traces = get_exception_traces()
         if traces:
             trace_block = "\n\n".join(
-                f"--- Error {index} ---\n{entry}" for index, entry in enumerate(traces, 1)
+                f"--- Error {index} ---\n{entry}"
+                for index, entry in enumerate(traces, 1)
             )
             text = (
                 "Exceptions were thrown during scrapping operations.\n\n"
@@ -50,10 +55,14 @@ class ScannerRunner:
 
         if log_file:
             text += "\nPlease review the attached log file for the full run log.\n"
-            html_body += "<p>Please review the attached log file for the full run log.</p>"
+            html_body += (
+                "<p>Please review the attached log file for the full run log.</p>"
+            )
         else:
             text += "\nNo log file was configured; check console output for details.\n"
-            html_body += "<p>No log file was configured; check console output for details.</p>"
+            html_body += (
+                "<p>No log file was configured; check console output for details.</p>"
+            )
 
         html_body += "</body></html>"
         return text, html_body
@@ -89,7 +98,9 @@ class ScannerRunner:
             message.attach(part)
 
         with smtplib.SMTP(email_cfg["smtp_server"], email_cfg["smtp_port"]) as server:
-            server.sendmail(email_cfg["sender"], email_cfg["recipient"], message.as_string())
+            server.sendmail(
+                email_cfg["sender"], email_cfg["recipient"], message.as_string()
+            )
         logger.debug("Error email sent to %s", email_cfg["recipient"])
 
     def send_telegram(self, new_results):
@@ -129,7 +140,9 @@ class ScannerRunner:
         token = parser["telegram"]["token"]
         chat_id = parser["telegram"]["chat_id"]
         url = f"https://api.telegram.org/bot{token}/sendMessage"
-        logger.debug("Posting Telegram message to chat_id=%s via %s", chat_id, conf_path)
+        logger.debug(
+            "Posting Telegram message to chat_id=%s via %s", chat_id, conf_path
+        )
         response = requests.post(
             url,
             json={"chat_id": chat_id, "text": message, "parse_mode": "HTML"},

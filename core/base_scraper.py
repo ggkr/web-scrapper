@@ -182,7 +182,11 @@ class BaseScraper(ABC):
             )
         with self.playwright_page(headless=headless, locale=locale) as own_page:
             return self._goto_and_get_content(
-                own_page, url, wait_for_selector, wait_for_selector_timeout, goto_timeout
+                own_page,
+                url,
+                wait_for_selector,
+                wait_for_selector_timeout,
+                goto_timeout,
             )
 
     @staticmethod
@@ -196,9 +200,11 @@ class BaseScraper(ABC):
         page.goto(url, wait_until="load", timeout=goto_timeout)
         if wait_for_selector:
             try:
-                page.wait_for_selector(wait_for_selector, timeout=wait_for_selector_timeout)
+                page.wait_for_selector(
+                    wait_for_selector, timeout=wait_for_selector_timeout
+                )
             except Exception:
-                logger.debug("Timeout waiting for selector %r on %s", wait_for_selector, url)
+                logger.debug(
+                    "Timeout waiting for selector %r on %s", wait_for_selector, url
+                )
         return page.content()
-
-

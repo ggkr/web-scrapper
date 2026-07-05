@@ -17,8 +17,12 @@ class DellStoreScraper(BaseScraper):
         listings = []
 
         links = dell_cfg.get("links", [])
-        price_class = dell_cfg.get("price_class", "h3 font-weight-bold mb-1 text-nowrap sale-price")
-        saving_class = dell_cfg.get("saving_class", "h6 align-middle font-weight-bold savings-price")
+        price_class = dell_cfg.get(
+            "price_class", "h3 font-weight-bold mb-1 text-nowrap sale-price"
+        )
+        saving_class = dell_cfg.get(
+            "saving_class", "h6 align-middle font-weight-bold savings-price"
+        )
         alert_threshold = float(dell_cfg.get("alert_threshold", 1.0))
         delay = float(dell_cfg.get("delay", 2.0))
 
@@ -28,17 +32,28 @@ class DellStoreScraper(BaseScraper):
             logger.debug("Playwright browser launched for Dell Store")
             for idx, link in enumerate(links):
                 if idx > 0 and delay > 0:
-                    logger.debug("Sleeping for %s seconds to respect rate limits...", delay)
+                    logger.debug(
+                        "Sleeping for %s seconds to respect rate limits...", delay
+                    )
                     time.sleep(delay)
 
-                listing = self._scan_link(page, link, price_class, saving_class, alert_threshold)
+                listing = self._scan_link(
+                    page, link, price_class, saving_class, alert_threshold
+                )
                 if listing is not None:
                     listings.append(listing)
 
         logger.debug("Dell store Playwright scan complete: %s listings", len(listings))
         return listings
 
-    def _scan_link(self, page, link: str, price_class: str, saving_class: str, alert_threshold: float) -> Listing | None:
+    def _scan_link(
+        self,
+        page,
+        link: str,
+        price_class: str,
+        saving_class: str,
+        alert_threshold: float,
+    ) -> Listing | None:
         try:
             logger.info("Fetching Dell product page: %s", link)
             page.goto(link, wait_until="load", timeout=60000)
@@ -79,7 +94,9 @@ class DellStoreScraper(BaseScraper):
             else:
                 savings_candidates.append(f"span.{saving_class}")
 
-            savings_candidates.extend(["span.savings-price", "span.ps-variant-savings-amount"])
+            savings_candidates.extend(
+                ["span.savings-price", "span.ps-variant-savings-amount"]
+            )
             savings_or_selector = ", ".join(savings_candidates)
 
             # Locate savings element
@@ -125,7 +142,12 @@ class DellStoreScraper(BaseScraper):
                     },
                 )
             else:
-                logger.debug("Savings (%s) for %s is below threshold (%s)", savings, link, alert_threshold)
+                logger.debug(
+                    "Savings (%s) for %s is below threshold (%s)",
+                    savings,
+                    link,
+                    alert_threshold,
+                )
                 return None
         except Exception:
             logger.exception("Failed to parse Dell element from %s", link)
