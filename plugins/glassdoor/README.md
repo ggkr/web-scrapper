@@ -52,7 +52,7 @@ glassdoor:
 | Title   | `[data-test="job-title"]`               | Falls back to common heading elements |
 | Company | `[data-test="employer-short-name"]`     | |
 | Location| `[data-test="employer-location"]`       | |
-| Link    | First `<a href*="glassdoor.com/job">` in card | Tracking params stripped |
+| Link    | First `<a href*="glassdoor.com/job">` in card | Removing tracking params will break the link |
 | Job ID  | `data-id` / `data-jobid` attribute, or extracted from href | |
 
 Glassdoor's hashed React class names (e.g. `JobCard_jobCard__abc12`) change on every
