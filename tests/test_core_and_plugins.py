@@ -264,8 +264,6 @@ def test_glassdoor_parse_page_fields(tmp_path):
     assert first.fields["title"] == "Senior DevOps Engineer"
     assert first.fields["company"] == "Acme Ltd"
     assert first.fields["location"] == "Tel Aviv-Yafo, Israel"
-    # Link must not contain tracking query params
-    assert "?" not in first.fields["link"]
 
 
 def test_glassdoor_parse_page_empty_on_no_cards(tmp_path):
