@@ -200,7 +200,6 @@ class GlassdoorScraper(BaseScraper):
                 if link.startswith("/"):
                     link = "https://www.glassdoor.com" + link
 
-
             # --- company --------------------------------------------------
             company_el = card.select_one(_SEL_COMPANY)
             company = company_el.get_text(strip=True) if company_el else ""
