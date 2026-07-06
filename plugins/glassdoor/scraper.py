@@ -182,22 +182,24 @@ class GlassdoorScraper(BaseScraper):
                 logger.debug("Skipping card without a detectable job ID")
                 return None
 
-            # --- link -----------------------------------------------------
-            link_el = card.select_one(
-                "a[href*='glassdoor.com/job']"
-            ) or card.select_one("a")
-            href = link_el["href"] if link_el and link_el.get("href") else ""
-            # Normalise relative URLs
-            if href.startswith("/"):
-                href = "https://www.glassdoor.com" + href
-            # Strip tracking query parameters — keep the listing URL clean
-            link = href.split("?")[0] if href else ""
-
             # --- title ----------------------------------------------------
             title_el = card.select_one(_SEL_TITLE) or card.select_one(
                 _SEL_TITLE_FALLBACK
             )
             title = title_el.get_text(strip=True) if title_el else ""
+
+            # --- link -----------------------------------------------------
+            link = title_el.get("href")
+            # leave AI code in as fallback:
+            if not link or not link.startswith("https://www.glassdoor.com/"):
+                link_el = card.select_one(
+                    "a[href*='glassdoor.com/']"
+                ) or card.select_one("a")
+                link = link_el["href"] if link_el and link_el.get("href") else ""
+                # Normalise relative URLs
+                if link.startswith("/"):
+                    link = "https://www.glassdoor.com" + link
+
 
             # --- company --------------------------------------------------
             company_el = card.select_one(_SEL_COMPANY)
