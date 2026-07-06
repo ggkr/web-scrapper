@@ -90,17 +90,15 @@ class BaseScraper(ABC):
             f"Chrome/{version} Safari/537.36"
         )
 
-    def http_headers(self, locale: str = None) -> dict[str, str]:
-        if not locale:
-            locale = self.locale
-        language = locale.split("-", maxsplit=1)[0]
+    def http_headers(self) -> dict[str, str]:
+        language = self.locale.split("-", maxsplit=1)[0]
         return {
             "User-Agent": self.build_user_agent(),
             "Accept": (
                 "text/html,application/xhtml+xml,application/xml;q=0.9,"
                 "image/avif,image/webp,image/apng,*/*;q=0.8"
             ),
-            "Accept-Language": f"{locale},{language};q=0.9,en-US;q=0.8,en;q=0.7",
+            "Accept-Language": f"{self.locale},{language};q=0.9,en-US;q=0.8,en;q=0.7",
             "Cache-Control": "max-age=0",
             "Upgrade-Insecure-Requests": "1",
         }
@@ -113,7 +111,7 @@ class BaseScraper(ABC):
         **kwargs,
     ) -> requests.Response:
         extra_headers = kwargs.pop("headers", {})
-        headers = {**self.http_headers(locale=self.locale), **extra_headers}
+        headers = {**self.http_headers(), **extra_headers}
         return requests.get(url, headers=headers, timeout=timeout, **kwargs)
 
     def fetch_static_page(
@@ -125,7 +123,7 @@ class BaseScraper(ABC):
         """Fetch a URL's raw response body via a plain HTTP GET - the default,
         lightweight way to get a page's content when nothing needs to run
         client-side JavaScript to produce it."""
-        response = self.http_get(url, locale=self.locale, timeout=timeout)
+        response = self.http_get(url, timeout=timeout)
         response.raise_for_status()
         return response.text
 
@@ -138,7 +136,7 @@ class BaseScraper(ABC):
         browser,
     ) -> dict:
         chrome_version = self._normalize_chrome_version(browser.version)
-        http_headers = self.http_headers(locale=self.locale)
+        http_headers = self.http_headers()
         return {
             "user_agent": self.build_user_agent(chrome_version),
             "locale": self.locale,
