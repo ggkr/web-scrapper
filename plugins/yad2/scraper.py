@@ -38,6 +38,10 @@ class Yad2Scraper(BaseScraper):
     fetch_rendered_page() for each individual fetch.
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.stealth = True
+
     def scan(self) -> list[Listing]:
         yad2 = self.config["yad2"]
         listings_by_id: dict[str, Listing] = {}
