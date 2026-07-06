@@ -22,7 +22,7 @@ class AgoraScraper(BaseScraper):
         agora = self.config["agora"]
         listings = []
 
-        with self.playwright_page() as page:
+        with self.browser_page() as page:
             logger.debug("Playwright browser launched for Agora")
             logging.info("Fetching Agora listings: %s", agora["base_url"])
             content = self.fetch_rendered_page(

@@ -74,7 +74,7 @@ class GlassdoorScraper(BaseScraper):
 
         listings_by_id: dict[str, Listing] = {}
 
-        with self.playwright_page() as page:
+        with self.browser_page() as page:
             logger.debug("Playwright browser launched for Glassdoor")
             for search_url in search_urls:
                 self._scan_search_url(

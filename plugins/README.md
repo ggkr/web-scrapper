@@ -34,10 +34,10 @@ for link in cfg["links"]:
 
 ### Multi-step flows: reusing one browser across several fetches
 
-Some sites need more than one fetch per scan that isn't a simple "page 1, 2, 3..." sequence — e.g. loading a search page, then fetching a separate detail page per result (`agora`), or discovering how many pages exist only after parsing the first one (`yad2`). For these, open `playwright_page()` once for the whole scan and pass the same `page` into each `fetch_rendered_page()` call, so every fetch reuses one browser instead of relaunching per request:
+Some sites need more than one fetch per scan that isn't a simple "page 1, 2, 3..." sequence — e.g. loading a search page, then fetching a separate detail page per result (`agora`), or discovering how many pages exist only after parsing the first one (`yad2`). For these, open `browser_page()` once for the whole scan and pass the same `page` into each `fetch_rendered_page()` call, so every fetch reuses one browser instead of relaunching per request:
 
 ```python
-with self.playwright_page() as page:
+with self.browser_page() as page:
     search_html = self.fetch_rendered_page(cfg["search_url"], page=page, wait_for_selector="#results")
     for result_url in extract_result_urls(search_html):
         detail_html = self.fetch_rendered_page(result_url, page=page)
@@ -46,15 +46,15 @@ with self.playwright_page() as page:
 
 ### When you need the live browser itself
 
-Occasionally a plugin genuinely needs to interact with the DOM rather than just read its rendered output — clicking, filling forms, or calling `page.evaluate()` for something not present in `page.content()`. In that case, use the `page` yielded by `playwright_page()` directly instead of going through `fetch_rendered_page()`:
+Occasionally a plugin genuinely needs to interact with the DOM rather than just read its rendered output — clicking, filling forms, or calling `page.evaluate()` for something not present in `page.content()`. In that case, use the `page` yielded by `browser_page()` directly instead of going through `fetch_rendered_page()`:
 
 ```python
-with self.playwright_page() as page:
+with self.browser_page() as page:
     page.goto(cfg["search_url"], wait_until="load", timeout=60000)
     # interact with page directly: locators, page.evaluate(), clicks, etc.
 ```
 
-Optional arguments: `headless=False` to show the browser window; `locale="en-US"` to override the default locale. Lower-level helpers `playwright_launch_args()` and `build_playwright_context_options()` are also available for advanced cases.
+Optional arguments: `headless=False` to show the browser window; `locale="en-US"` to override the default locale. Lower-level helpers `browser_launch_args()` and `build_browser_context_options()` are also available for advanced cases.
 
 Run `playwright install chromium` once before using any Playwright-based plugin.
 

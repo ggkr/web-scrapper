@@ -4,8 +4,8 @@ from abc import ABC, abstractmethod
 from contextlib import contextmanager
 
 import requests
-from playwright.sync_api import Page, sync_playwright
-from playwright_stealth import Stealth
+from playwright.sync_api import Page
+from camoufox.sync_api import Camoufox
 
 from core.cache_manager import CacheManager
 from core.listing import Listing
@@ -19,7 +19,7 @@ DEFAULT_VIEWPORT = {"width": 1280, "height": 800}
 FALLBACK_CHROME_VERSION = "131.0.0.0"
 
 
-class BaseScraper(ABC):
+class BaseScraper(ABC): 
     """Base class for scraper plugins.
 
     BaseScraper owns *fetching*: plain HTTP requests and Playwright-rendered
@@ -130,10 +130,10 @@ class BaseScraper(ABC):
         return response.text
 
     @staticmethod
-    def playwright_launch_args() -> list[str]:
+    def browser_launch_args() -> list[str]:
         return ["--disable-blink-features=AutomationControlled"]
 
-    def build_playwright_context_options(
+    def build_browser_context_options(
         self,
         browser,
     ) -> dict:
@@ -154,7 +154,7 @@ class BaseScraper(ABC):
         }
 
     @contextmanager
-    def playwright_page(
+    def browser_page(
         self,
     ):
         """Yields a live Playwright `Page` for plugins that need to interact with
@@ -163,18 +163,23 @@ class BaseScraper(ABC):
         browser across several `fetch_rendered_page()` calls. Prefer
         `fetch_rendered_page()` on its own when a plugin only needs a single
         page's resulting HTML content."""
-        with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(
-                headless=self.headless,
-                args=self.playwright_launch_args(),
-            )
+        with Camoufox(
+            headless=self.headless,
+            # Pass any extra launch flags if needed, or remove if handling options below
+        ) as browser:
             try:
-                context = browser.new_context(
-                    **self.build_playwright_context_options(browser)
-                )
-                if self.stealth:
-                    stealth_obj = Stealth()
-                    stealth_obj.apply_stealth_sync(context)
+                # old code:
+                # context = browser.new_context(
+                #     **self.build_browser_context_options(browser)
+                # )
+                # stealth is handled by camoufox now
+                # if self.stealth:
+                #     stealth_obj = Stealth()
+                #     stealth_obj.apply_stealth_sync(context)
+                # new code if at all needed for context:
+                # context_options = self.build_browser_context_options(browser)
+                # context = browser.new_context(**context_options)
+                context = browser.new_context()
                 yield context.new_page()
             finally:
                 browser.close()
@@ -191,14 +196,14 @@ class BaseScraper(ABC):
     ) -> str:
         """Fetch a URL's fully-rendered HTML via a real Playwright browser (for
         pages that need JS execution to produce their content). Pass an
-        already-open `page` from an active `playwright_page()` session to reuse
+        already-open `page` from an active `browser_page()` session to reuse
         one browser across multiple calls; otherwise a short-lived browser is
         launched just for this call."""
         if page is not None:
             return self._goto_and_get_content(
                 page, url, wait_for_selector, wait_for_selector_timeout, goto_timeout
             )
-        with self.playwright_page(headless=headless, locale=self.locale) as own_page:
+        with self.browser_page(headless=headless, locale=self.locale) as own_page:
             return self._goto_and_get_content(
                 own_page,
                 url,
