@@ -37,6 +37,7 @@ class Yad2Scraper(BaseScraper):
     __NEXT_DATA__ - so this plugin drives its own pagination loop, using
     fetch_rendered_page() for each individual fetch.
     """
+
     def scan(self) -> list[Listing]:
         yad2 = self.config["yad2"]
         listings_by_id: dict[str, Listing] = {}

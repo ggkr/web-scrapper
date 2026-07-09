@@ -19,7 +19,7 @@ DEFAULT_VIEWPORT = {"width": 1280, "height": 800}
 FALLBACK_CHROME_VERSION = "131.0.0.0"
 
 
-class BaseScraper(ABC): 
+class BaseScraper(ABC):
     """Base class for scraper plugins.
 
     BaseScraper owns *fetching*: plain HTTP requests and Playwright-rendered
