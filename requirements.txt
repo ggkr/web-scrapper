@@ -1,4 +1,8 @@
-playwright>=1.40.0
-PyYAML>=6.0
-requests>=2.31.0
-beautifulsoup4>=4.12.0
+# until new version of camoufox is released that is compatible with playwright 1.60+
+# camoufox~=0.0
+playwright==1.58.0
+camoufox<=1.58.0
+
+PyYAML~=6.0
+requests~=2.0
+beautifulsoup4~=4.0

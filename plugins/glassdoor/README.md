@@ -1,6 +1,6 @@
 # Glassdoor Jobs Plugin
 
-Scrapes Glassdoor public job search pages using Playwright (headless Chromium).
+Scrapes Glassdoor public job search pages using a browser automation session (Firefox-based via Camoufox).
 Glassdoor renders its job cards client-side via React, so plain HTTP requests only
 return a nearly-empty HTML shell — a real browser is required.
 
@@ -73,4 +73,4 @@ DevTools and update the `_SEL_*` constants in `scraper.py`.
 
 - Scraping Glassdoor may conflict with their Terms of Service — use responsibly.
 - Keep `delay` ≥ 2 and `max_pages` reasonable; aggressive polling risks IP bans.
-- Run `playwright install chromium` once before using this plugin.
+- Run `playwright install firefox` and `camoufox fetch` once before using this plugin.

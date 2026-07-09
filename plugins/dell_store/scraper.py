@@ -28,7 +28,7 @@ class DellStoreScraper(BaseScraper):
 
         logger.debug("Dell store Playwright scan starting: %s links", len(links))
 
-        with self.playwright_page() as page:
+        with self.browser_page() as page:
             logger.debug("Playwright browser launched for Dell Store")
             for idx, link in enumerate(links):
                 if idx > 0 and delay > 0:

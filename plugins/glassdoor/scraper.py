@@ -55,6 +55,10 @@ class GlassdoorScraper(BaseScraper):
     and for a description of every config key.
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.locale = "en-US"
+
     def scan(self) -> list[Listing]:
         cfg = self.config["glassdoor"]
         search_urls: list[str] = cfg.get("search_urls", [])
@@ -70,7 +74,7 @@ class GlassdoorScraper(BaseScraper):
 
         listings_by_id: dict[str, Listing] = {}
 
-        with self.playwright_page(locale="en-US") as page:
+        with self.browser_page() as page:
             logger.debug("Playwright browser launched for Glassdoor")
             for search_url in search_urls:
                 self._scan_search_url(

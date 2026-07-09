@@ -48,7 +48,7 @@ class Yad2Scraper(BaseScraper):
             yad2.get("fetch_item_details", False),
         )
 
-        with self.playwright_page() as page:
+        with self.browser_page() as page:
             logger.debug("Playwright browser launched for Yad2")
             for search_url in yad2["search_urls"]:
                 self._scan_search_url(page, search_url, yad2, listings_by_id)

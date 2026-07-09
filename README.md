@@ -8,7 +8,8 @@ Built-in plugins live under `plugins/` (e.g. bulletin boards, classifieds, store
 
 ```bash
 pip install -r requirements.txt
-playwright install chromium   # required for Playwright-based plugins
+playwright install firefox    # required for browser-based plugins (uses Camoufox)
+camoufox fetch
 ```
 
 Telegram subscribers are configured in `subscribers/<name>.conf` with a bot token and chat ID. See `subscribers/createSubscribers.md` for setup.
@@ -81,3 +82,14 @@ python scanner.py --config config/example.yaml --log-timestamp
 | `DEBUG` | Operational and technical detail — cache sync, pagination, per-listing parses, Telegram sends, Playwright steps |
 
 If errors occur, an email with the log file attached is sent when a log file is configured (see `notifications.email` in the YAML).
+
+# Known errors
+
+## TypeError: Cannot read properties of undefined (reading 'url')
+it's a known compatibility bug between recent versions of Playwright (1.60+) and Camoufox.
+run to resolve:
+```
+pip install --upgrade camoufox playwright
+camoufox fetch
+playwright install firefox
+```
