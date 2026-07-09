@@ -54,9 +54,7 @@ with self.browser_page() as page:
     # interact with page directly: locators, page.evaluate(), clicks, etc.
 ```
 
-Optional arguments: `headless=False` to show the browser window; `locale="en-US"` to override the default locale. Lower-level helpers `browser_launch_args()` and `build_browser_context_options()` are also available for advanced cases.
-
-Run `playwright install chromium` once before using any Playwright-based plugin.
+Run `playwright install firefox` and `camoufox fetch` once before using any browser-based plugin.
 
 ### Cache
 

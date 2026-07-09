@@ -8,7 +8,8 @@ Built-in plugins live under `plugins/` (e.g. bulletin boards, classifieds, store
 
 ```bash
 pip install -r requirements.txt
-playwright install chromium   # required for Playwright-based plugins
+playwright install firefox    # required for browser-based plugins (uses Camoufox)
+camoufox fetch
 ```
 
 Telegram subscribers are configured in `subscribers/<name>.conf` with a bot token and chat ID. See `subscribers/createSubscribers.md` for setup.

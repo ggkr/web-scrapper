@@ -33,22 +33,14 @@ class BaseScraper(ABC):
     def __init__(
         self,
         config: dict,
-        stealth: bool = False,
         headless: bool = True,
         locale: str = DEFAULT_LOCALE,
-        timezone: str = DEFAULT_TIMEZONE,
-        geolocation: dict = DEFAULT_GEOLOCATION,
-        viewport: dict = DEFAULT_VIEWPORT,
     ):
         self.config = config
         self.cache_manager = CacheManager(config)
         self.has_err = False
-        self.stealth = stealth
-        self.headless = headless  # already the new mode by default
+        self.headless = headless
         self.locale = locale
-        self.timezone = timezone
-        self.geolocation = geolocation
-        self.viewport = viewport
 
     @abstractmethod
     def scan(self) -> list[Listing]:
@@ -72,13 +64,6 @@ class BaseScraper(ABC):
         if machine in {"aarch64", "arm64"}:
             return "X11; Linux aarch64"
         return f"X11; Linux {machine}"
-
-    @classmethod
-    def _normalize_chrome_version(cls, version: str) -> str:
-        major = version.split(".", maxsplit=1)[0]
-        if not major.isdigit():
-            return FALLBACK_CHROME_VERSION
-        return f"{major}.0.0.0"
 
     @classmethod
     def build_user_agent(cls, chrome_version: str | None = None) -> str:
@@ -127,30 +112,6 @@ class BaseScraper(ABC):
         response.raise_for_status()
         return response.text
 
-    @staticmethod
-    def browser_launch_args() -> list[str]:
-        return ["--disable-blink-features=AutomationControlled"]
-
-    def build_browser_context_options(
-        self,
-        browser,
-    ) -> dict:
-        chrome_version = self._normalize_chrome_version(browser.version)
-        http_headers = self.http_headers()
-        return {
-            "user_agent": self.build_user_agent(chrome_version),
-            "locale": self.locale,
-            "timezone_id": self.timezone,
-            "geolocation": self.geolocation,
-            "permissions": ["geolocation"],
-            "viewport": self.viewport,
-            "extra_http_headers": {
-                key: value
-                for key, value in http_headers.items()
-                if key.lower() != "user-agent"
-            },
-        }
-
     @contextmanager
     def browser_page(
         self,
@@ -163,20 +124,8 @@ class BaseScraper(ABC):
         page's resulting HTML content."""
         with Camoufox(
             headless=self.headless,
-            # Pass any extra launch flags if needed, or remove if handling options below
         ) as browser:
             try:
-                # old code:
-                # context = browser.new_context(
-                #     **self.build_browser_context_options(browser)
-                # )
-                # stealth is handled by camoufox now
-                # if self.stealth:
-                #     stealth_obj = Stealth()
-                #     stealth_obj.apply_stealth_sync(context)
-                # new code if at all needed for context:
-                # context_options = self.build_browser_context_options(browser)
-                # context = browser.new_context(**context_options)
                 context = browser.new_context()
                 yield context.new_page()
             finally:
@@ -190,7 +139,6 @@ class BaseScraper(ABC):
         wait_for_selector: str | None = None,
         wait_for_selector_timeout: int = 10000,
         goto_timeout: int = 60000,
-        headless: bool = True,
     ) -> str:
         """Fetch a URL's fully-rendered HTML via a real Playwright browser (for
         pages that need JS execution to produce their content). Pass an
@@ -201,7 +149,7 @@ class BaseScraper(ABC):
             return self._goto_and_get_content(
                 page, url, wait_for_selector, wait_for_selector_timeout, goto_timeout
             )
-        with self.browser_page(headless=headless, locale=self.locale) as own_page:
+        with self.browser_page() as own_page:
             return self._goto_and_get_content(
                 own_page,
                 url,
